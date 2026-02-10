@@ -1,2 +1,6 @@
 # DA200-Demo
-hello, demo
+## How to run
+In RStudio, set your working directory to the repo folder and run:
+```r
+source("analysis.R")
+
