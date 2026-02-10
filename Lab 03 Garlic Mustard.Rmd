@@ -1,0 +1,206 @@
+---
+title: "Lab 03 Garlic Mustard Project"
+author: "Chloe V., Della H."
+date: "2026-02-05"
+output: html_document
+---
+
+```{r, include=FALSE, echo=FALSE}
+# load packages
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# set working directory
+setwd("~/Documents/S26/DA 101/Labs/Lab 03")
+
+# read in the data
+GarlicMustardData_copy <- read_csv("GarlicMustardData copy.csv")
+```
+
+### A histogram of average fruit number values across both regions
+
+```{r message=FALSE, warning=FALSE, include=TRUE, echo=FALSE}
+# histogram plotting dist of avg # of fruits
+avgnfruitplot <- ggplot(GarlicMustardData_copy, aes(x = AvgNFruits)) +    
+  geom_histogram() + 
+  labs(
+    x = "Number of Fruits per Plant",        # X-axis label
+    y = "Number of Plants",                  # Y-axis label
+    title = "Average Number of Fruits Across North America and Europe"
+    )
+avgnfruitplot
+```
+
+The histogram above shows the distribution of fruits in Garlic Mustard Plant. The mass of the data is concentrated on the left of the graph. Most of the plants produce 10 to 30 fruits per plant, so the frequency is low.
+
+### Making lists & tables
+
+-   This is a bullet point item
+
+-   This is a list item
+
+| COLNAME1 | COLNAME2 | COLNAME3 | COLNAME4 | COLNAME5 |
+|----------|----------|----------|----------|----------|
+| val1     | 100      | 5        | oryx     | 34.9     |
+| val2     | 200      | 10       | crake    | 89.1     |
+| val3     | 300      | 200      | saiga    | 0.02     |
+
+### Evaluating an R expression in line
+
+Calculating mean `r mean(GarlicMustardData_copy$Pop_Size, na.rm = TRUE)`
+
+### Review: summarizing data
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+GarlicMustardData_copy$AvgAdultHeight # print out all values in this column
+
+GarlicMustardData_copy[6,15] # print out the value in row 6, column 15
+GarlicMustardData_copy[1:4, c(14, 15)] # print out values from row 1 to 4, column 14 and 15
+GarlicMustardData_copy %>% select(AvgNLeaves, AvgNFruits, AvgAdultHeight) # print out all information in these 3 columns
+GarlicMustardData_copy %>% select(1, 2, 3) # print out all information in the first 3 columns
+GarlicMustardData_copy %>% slice(3:8) # print out info from row 3 to row 8 across all columns 
+
+```
+
+#### What is the 20th value in the AvgNFruits column? What code or method did you use to find this?
+
+24
+
+```{r}
+GarlicMustardData_copy[20,17]
+```
+
+#### Can you create a new dataframe that contains only the last 25 rows of data? What code or method did you use to find this?
+
+```{r}
+ggplot(GarlicMustardData_copy, aes(x = Region)) +
+  geom_bar()
+  
+```
+
+**Challenge**: Make and interpret a scatterplot in ggplot Let's say that your friendly boss hypothesizes that the greater number of leaves a plant has, the more fruit the plant will produce and this relationship might be different between the two geographic regions. First, you need to decide which variable is the dependent one and which is the independent one. For this example, changes in one variable (the independent one) might cause changes in the other variable (the dependent one). Based on your boss's hypothesis, which variable is the most likely independent variable?
+
+Dependent Variable: Fruit 
+
+Independent Variable: Leaves
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+ggplot(GarlicMustardData_copy, aes(x = AvgNLeaves, y = AvgNFruits)) + 
+  geom_point() + 
+  labs(
+    x = "Average Number of Leaves",
+    y = "Average Number of Fruits",
+    title = "Relationship between the number of leaves & fruits in Garlic Mustard Plants"
+  ) + 
+  geom_smooth(method="lm", linetype=1) +
+  facet_wrap(~Region)
+```
+
+2 graphs show that the observations in both regions, North America and Europe, are mostly focused on the bottom left of the graphs. There are strong positive correlations between the average number of leaves and fruits of the Garlic Mustard plants. However, the range of the average number of leaves in Europe is larger than that in North America.
+
+## Putting in all together
+
+In this analysis, we are looking at the average number of leaves in the Garlic Mustard plants, which is our dependent variable. We are comparing the relationship between the leaves with the annual temperature and annual precipitation, which are our independent variables. Our main question is what the main factors are that affect the number of leaves on Garlic Mustard plants.
+
+For all figures below, we fully collaborated on the coding and interpretations of the graphs.
+
+### 2 Histograms of Average Number of Leaves of Garlic Mustard Plants in 2 regions
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# Histogram of Average Number of Leaves of Garlic Mustard Plants in Europe & North America
+ggplot(GarlicMustardData_copy, aes(AvgNLeaves)) + 
+  geom_histogram() + 
+  labs(
+    x = "Average Number of Leaves",
+    title = "Distribution of The Number of Leaves in Europe and North America"
+  ) + 
+  facet_wrap(~Region)
+
+```
+
+```{r, echo=FALSE}
+# Mean of number of leavess North America only
+NorthAmericaData <- GarlicMustardData_copy %>%
+filter(Region == "NorthAm")
+
+mean(NorthAmericaData$AvgNLeaves, na.rm = TRUE)
+
+
+# Mean of number of leaves in Europe
+EuropeData <- GarlicMustardData_copy %>%
+filter(Region == "Europe")
+
+mean(EuropeData$AvgNLeaves, na.rm = TRUE)
+
+```
+
+These histograms show the distribution of leaves per Garlic Mustard plant in Europe and North America. These 2 histograms show that the amount of plants with a high count of leaves are more prevalent in Europe, meanwhile in North America, there are more plants with less leaves.
+
+North America plants are healthier, as there are about 80 plants that have approximately 17 leaves, while in Europe, there are only 68 plants that have that amount of leaves.
+
+```{r, warning=FALSE, echo=FALSE}
+boxplot_dv <- ggplot(GarlicMustardData_copy, aes(x = Region, y = AvgNLeaves)) + 
+  geom_boxplot() + 
+  labs(x = "Region", 
+       y = "Average Number of Leaves", 
+       title = "Garlic Mustard in Europe and North America") 
+boxplot_dv 
+```
+
+The two box plots show on average, Europe Garlic Mustard plants have slightly more leaves than those in North America. However, Europe has one extreme case where there are 175 leaves in one Garlic Mustard plant.
+
+#### Plots showing the relationship between Annual Precipitation and the Average Number of Leaves of Garlic Mustard Plants in Europe and North America
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# independent variable 1 - precipitation - bio12
+ggplot(GarlicMustardData_copy, aes(x = bio12, y = AvgNLeaves)) + 
+  geom_point() +
+  facet_wrap(~Region) + 
+  geom_smooth(method="lm", linetype=1) +
+  labs(
+    x = "Precipitation ", 
+    y = "The Number of Leaves",
+    title = "Relationship between Annual Precipipation and Average Number of Leaves "
+  )
+```
+
+These scatterplots show the relationship between annual precipitation and the average number of leaves. In Europe, there is a slight positive correlation between precipitation and the number of leaves. The data points are more concentrated in the left of the graph, indicating there is less rain in Europe than North America, but the plants still grow better with more precipitation. Meanwhile, the data points indicate North America gets more rain overall, and the plants grow the most leaves when the precipitation ranges around 900mm - 1250mm.
+
+#### Plots showing the relationship between Annual Temperature and the Average Number of Leaves of Garlic Mustard Plants in Europe and North America
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# independent variable 2 - temperature - bio1
+ggplot(GarlicMustardData_copy, aes(x = bio1, y = AvgNLeaves)) + 
+  geom_point() +
+  facet_wrap(~Region) +
+  geom_smooth(method="lm", linetype=1) + 
+  labs(
+    x = "Annual Temperature",
+    y = "The Number of Leaves", 
+    title = "Relationship between Annual Temperature and Average Number of Leaves"
+  )
+```
+
+The scatterplots show the relationship between annual temperature and the number of leaves. In Europe, there is a slight negative correlation, indicating that the Garlic Mustard plants grow more leaves when the temperature ranges between 6 to 10 degrees. In North America, there is a slight positive correlation. The plants have the most leaves when the temperature is between 12 and 14 degrees. Most of the data points concentrate in the 9 to 12 degrees range.
+
+### Interpretation
+
+##### Differences among regions (histogram & box plot)
+
+The histograms and box plots show us that Europe Garlic Mustard plants produce more leaves per plant than those in North America. The mean leaf count in North America is `r mean(NorthAmericaData$AvgNLeaves, na.rm = TRUE)` while in Europe, the mean leaf count is `r mean(EuropeData$AvgNLeaves, na.rm = TRUE)`. This proves that the Garlic Mustard plants grow more leaves in Europe than in North America. 
+
+##### Relationships among continuous variables
+
+Our scatterplots show us that there is not much of a difference in the leaf growth when compared to annual precipitation and annual temperature between the two regions. While each region has points of best conditions for leaf growth, neither region produces significantly more leaves than the other.
+
+### Conclusion
+
+In conclusion, our takeaway in this analysis is that there are more Garlic Mustard plants in North America that produce a low number of leaves, compared to the Garlic Mustard plants in Europe that produce a higher number of leaves per plant. While we did not find a significant correlation between the number of leaves with annual temperature and annual precipitation, we found that North America Garlic Mustard plants grow the most amount of leaves when the temperature is around 12 degrees and the precipitation is around 1100mm. 
+
+We are unsure of the next steps to take, since we cannot control the climate to reduce the growth of Garlic Mustard plants. We suggest researching the relationship of Garlic Mustard plants and Herb to explore the idea of natural predators to the Garlic Mustard plants. 
+
+
+
+
